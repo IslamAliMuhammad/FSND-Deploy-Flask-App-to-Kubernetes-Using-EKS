@@ -4,12 +4,40 @@ This is the project starter repo for the fourth course in the [Udacity Full Stac
 
 In this project you will containerize and deploy a Flask API to a Kubernetes cluster using Docker, AWS EKS, CodePipeline, and CodeBuild.
 
+## EXTERNAL-IP URL:
+    a3e36203073f311ea92f206ebf8c81af-1112427113.us-west-2.elb.amazonaws.com
+
 The Flask app that will be used for this project consists of a simple API with three endpoints:
 
 - `GET '/'`: This is a simple health check, which returns the response 'Healthy'. 
+    - Sample:
+        ```
+        curl --request GET 'a3e36203073f311ea92f206ebf8c81af-1112427113.us-west-2.elb.amazonaws.com/' -H "Authorization: Bearer ${TOKEN}" | jq
+        ```
+    - Response:
+        ```
+        "Healthy"
+        ```
 - `POST '/auth'`: This takes a email and password as json arguments and returns a JWT based on a custom secret.
-- `GET '/contents'`: This requires a valid JWT, and returns the un-encrpyted contents of that token. 
+    - Sample:
+        ```
+        export TOKEN=`curl -d '{"email":"<EMAIL>","password":"<PASSWORD>"}' -H "Content-Type: application/json" -X POST a3e36203073f311ea92f206ebf8c81af-1112427113.us-west-2.elb.amazonaws.com/auth  | jq -r '.token'`
 
+        ```
+- `GET '/contents'`: This requires a valid JWT, and returns the un-encrpyted contents of that token. 
+    - Sample
+        ```
+        curl --request GET 'a3e36203073f311ea92f206ebf8c81af-1112427113.us-west-2.elb.amazonaws.com/contents' -H "Authorization: Bearer ${TOKEN}" | jq 
+
+        ```
+    - Response:
+        ```
+        {
+        "email": "islam",
+        "exp": 1586940489,
+        "nbf": 1585730889
+        }
+        ```
 The app relies on a secret set as the environment variable `JWT_SECRET` to produce a JWT. The built-in Flask server is adequate for local development, but not production, so you will be using the production-ready [Gunicorn](https://gunicorn.org/) server when deploying the app.
 
 ## Initial setup
@@ -36,3 +64,4 @@ Completing the project involves several steps:
 6. Create a CodeBuild stage which will build, test, and deploy your code
 
 For more detail about each of these steps, see the project lesson [here](https://classroom.udacity.com/nanodegrees/nd004/parts/1d842ebf-5b10-4749-9e5e-ef28fe98f173/modules/ac13842f-c841-4c1a-b284-b47899f4613d/lessons/becb2dac-c108-4143-8f6c-11b30413e28d/concepts/092cdb35-28f7-4145-b6e6-6278b8dd7527).
+
